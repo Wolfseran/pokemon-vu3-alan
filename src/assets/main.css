@@ -1,0 +1,8 @@
+body {
+  /* Establecer un color de fondo morado claro (Lavanda) */
+  background-color: #e6e6fa; /* Lavanda suave */
+  color: #333; /* Color de texto oscuro para alto contraste */
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+}
