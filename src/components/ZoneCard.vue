@@ -1,5 +1,13 @@
 <script setup lang="ts">
-import type { Zone } from '@/data/mapData' // Importamos la interfaz
+import { useRouter } from 'vue-router' // 🎯 1. Importamos el router
+
+// NOTA: Si eliminaste mapData.ts, necesitarás definir la interfaz Zone aquí
+interface Zone {
+  id: number
+  nombre: string
+  desbloqueado: boolean
+  sprite: string
+}
 
 // Definimos las props (recibimos el objeto Zone completo)
 interface Props {
@@ -8,14 +16,25 @@ interface Props {
 
 const props = defineProps<Props>()
 
-// Función para simular el click (navegación)
+// 1. DEFINIMOS EL EVENTO: Permite a este componente enviar notificaciones.
+const emit = defineEmits(['unlocked'])
+
+// 🎯 2. Inicializamos el router para la navegación
+const router = useRouter()
+
+// Función para simular el click (navegación y EMISIÓN de evento)
 const handleClick = () => {
   if (props.zone.desbloqueado) {
-    // En un futuro, aquí usaremos Vue Router para ir a /zone/:id
-    console.log(`¡Navegando a la Zona ${props.zone.id}: ${props.zone.nombre}!`)
-    // router.push(`/zone/${props.zone.id}`);
+    console.log(`[CARD] Accediendo a la Zona ${props.zone.id}.`)
+
+    // 3. EMITIMOS el evento 'unlocked' (Requisito FASE 1)
+    emit('unlocked', props.zone.id)
+
+    // 🎯 4. NAVEGAMOS a la ruta dinámica /zone/:id (Requisito FASE 3)
+    // Usamos el nombre de la ruta 'zone' que definimos en index.ts
+    router.push({ name: 'zone', params: { id: props.zone.id } })
   } else {
-    console.log(`La Zona ${props.zone.id} está BLOQUEADA.`)
+    console.log(`La Zona ${props.zone.id} está BLOQUEADA. No se permite el acceso.`)
   }
 }
 </script>
@@ -29,8 +48,7 @@ const handleClick = () => {
     <span class="zone-sprite">{{ props.zone.sprite }}</span>
 
     <span class="zone-name">{{ props.zone.nombre }}</span>
-
-    <span v-if="!props.zone.desbloqueado" class="lock-icon">🔒</span>
+    <span v-if="!props.zone.desbloqueado" class="lock-icon">🔒</span>  
   </button>
 </template>
 

@@ -1,18 +1,47 @@
 <script setup lang="ts">
 // Importamos los componentes necesarios de Vue Router
-import { RouterView, RouterLink } from 'vue-router'
-// Ya no necesitamos importar PokemonCard ni los sprites aquí.
-// Ese contenido se movió a src/views/HomeView.vue
+import { RouterView, RouterLink, useRoute } from 'vue-router' // 🎯 Añadimos useRoute
+import { computed } from 'vue' // 🎯 Añadimos computed
+
+// ------------------------------------------------
+// Lógica de Navegación Dinámica (FASE 3 - Requisitos)
+// ------------------------------------------------
+
+const route = useRoute()
+
+// Mapa de sprites de zonas (debe coincidir con MapView.vue)
+const zoneSprites: { [key: string]: string } = {
+  '1': '🌳', // Bosque Verdoso
+  '2': '🌋', // Cueva Ígnea
+  '3': '🌊', // Costa Tormentosa
+  '4': '🏛️', // Ruinas Antiguas
+  '5': '🔥', // Volcán Magma
+}
+
+// Propiedad computada para determinar si estamos DENTRO de una zona (ruta 'zone').
+const isInsideZone = computed(() => route.name === 'zone')
+
+// Propiedad computada para obtener el ID de la zona actual.
+const currentZoneId = computed(() => (route.params.id as string) || '1')
+
+// Propiedad computada para obtener el icono de la zona actual.
+const currentZoneSprite = computed(() => zoneSprites[currentZoneId.value] || '❓')
 </script>
 
 <template>
   <header>
     <nav class="main-nav">
-      <RouterLink to="/">🏡 Home (Act. 1)</RouterLink>
+      <RouterLink to="/">🏡 Home</RouterLink>
       |
-      <RouterLink to="/map">🌍 Mapa (Act. 2)</RouterLink>
-      |
-      <RouterLink to="/zone/1">🔥 Zona 1</RouterLink>
+      <RouterLink to="/map">🌍 Mapa</RouterLink>
+
+      <template v-if="isInsideZone">
+        |
+        <RouterLink :to="{ name: 'zone', params: { id: currentZoneId } }">
+          {{ currentZoneSprite }} Zona {{ currentZoneId }}
+        </RouterLink>
+      </template>
+
       |
       <RouterLink to="/missions">📜 Misiones</RouterLink>
       |
